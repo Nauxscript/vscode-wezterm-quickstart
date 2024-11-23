@@ -53,10 +53,10 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run compile && npm run package",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "build": "vsce package",
+    "package": "vsce package",
     "pretest": "npm run compile"
   },
   "devDependencies": {
