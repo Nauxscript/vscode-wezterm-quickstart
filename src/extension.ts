@@ -1,18 +1,16 @@
 import * as vscode from 'vscode';
-import { spawn } from 'child_process';
+import { spawn, exec } from 'child_process';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Extension "vscode-wezterm" is now active!');
 
     let disposable = vscode.commands.registerCommand('vscode-wezterm.openTerminal', () => {
-        // 获取当前工作区路径
         const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
         if (!workspacePath) {
             vscode.window.showErrorMessage('No workspace folder opened');
             return;
         }
 
-        // 获取配置的 wezterm 路径
         const config = vscode.workspace.getConfiguration('vscode-wezterm');
         const weztermPath = config.get<string>('weztermPath');
 
@@ -21,8 +19,8 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        // 启动 WezTerm
         try {
+            // start WezTerm
             const child = spawn(weztermPath, [
                 'start',
                 '--cwd',
@@ -34,6 +32,11 @@ export function activate(context: vscode.ExtensionContext) {
             child.on('error', (error) => {
                 vscode.window.showErrorMessage(`Failed to start WezTerm: ${error.message}`);
             });
+
+            // directly execute AppleScript to bring the WezTerm window to the front
+            const script = `tell application "WezTerm" to activate`;
+            exec(`osascript -e '${script}'`);
+            
         } catch (error) {
             vscode.window.showErrorMessage(`Failed to execute WezTerm: ${error}`);
         }
