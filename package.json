@@ -2,7 +2,7 @@
   "name": "vscode-wezterm-quickstart",
   "displayName": "VSCode WezTerm Quickstart",
   "description": "A VSCode extension that opens WezTerm terminal in current workspace directory.",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "publisher": "Nauxscript",
   "author": {
     "name": "Nauxscript"
@@ -53,10 +53,10 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile && npm run package",
+    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "package": "vsce package",
+    "prepack": "npm run compile && vsce package",
     "pretest": "npm run compile"
   },
   "devDependencies": {
