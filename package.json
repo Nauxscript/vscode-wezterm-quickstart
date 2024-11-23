@@ -26,9 +26,7 @@
     "external terminal"
   ],
   "main": "./out/extension.js",
-  "activationEvents": [
-    "onCommand:vscode-wezterm.openTerminal"
-  ],
+  "activationEvents": ["onCommand:vscode-wezterm.openTerminal"],
   "contributes": {
     "commands": [
       {
