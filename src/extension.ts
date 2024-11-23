@@ -1,10 +1,13 @@
 import * as vscode from 'vscode';
 import { spawn, exec } from 'child_process';
+import { promisify } from 'util';
+
+const execPromise = promisify(exec);
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Extension "vscode-wezterm" is now active!');
 
-    let disposable = vscode.commands.registerCommand('vscode-wezterm.openTerminal', () => {
+    let disposable = vscode.commands.registerCommand('vscode-wezterm.openTerminal', async () => {
         const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
         if (!workspacePath) {
             vscode.window.showErrorMessage('No workspace folder opened');
@@ -19,29 +22,39 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
+        let child
+
         try {
-            // start WezTerm
-            const child = spawn(weztermPath, [
+            // 使用 wezterm cli list 检查是否有活动窗口
+            const { stdout } = await execPromise(`${weztermPath} cli list`);
+            console.log('stdout', stdout);
+            if (stdout.trim()) {
+                console.log('已有窗口，创建新标签');
+                // 已有窗口，创建新标签
+                child = spawn(weztermPath, [
+                    'cli',
+                    'spawn',
+                    '--cwd',
+                    workspacePath
+                ], {
+                    stdio: 'inherit'
+                })
+                const activateScript = `tell application "WezTerm" to activate`;
+                exec(`osascript -e '${activateScript}'`);
+            }
+        } catch (error) {
+            // 如果 cli list 命令失败，说明没有 WezTerm 进程，创建新进程
+            // console.error('Failed to check WezTerm windows:', error);
+            console.log('没有 WezTerm 进程，创建新进程');
+            child = spawn(weztermPath, [
                 'start',
                 '--cwd',
                 workspacePath
             ], {
                 stdio: 'inherit'
             });
-
-            child.on('error', (error) => {
-                vscode.window.showErrorMessage(`Failed to start WezTerm: ${error.message}`);
-            });
-
-            // directly execute AppleScript to bring the WezTerm window to the front
-            const script = `tell application "WezTerm" to activate`;
-            exec(`osascript -e '${script}'`);
-            
-        } catch (error) {
-            vscode.window.showErrorMessage(`Failed to execute WezTerm: ${error}`);
         }
     });
-
     context.subscriptions.push(disposable);
 }
 
