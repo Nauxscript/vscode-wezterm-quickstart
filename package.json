@@ -1,0 +1,65 @@
+{
+  "name": "vscode-wezterm-quickstart",
+  "displayName": "VSCode WezTerm Quickstart",
+  "description": "A VSCode extension that opens WezTerm terminal in current workspace directory.",
+  "version": "0.0.1",
+  "publisher": "Nauxscript",
+  "author": {
+    "name": "Nauxscript"
+  },
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nauxscript/vscode-wezterm-quickstart"
+  },
+  "license": "MIT",
+  "categories": [
+    "Keymaps",
+    "Other"
+  ],
+  "keywords": [
+    "wezterm",
+    "terminal",
+    "external terminal"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": ["onCommand:vscode-wezterm.openTerminal"],
+  "contributes": {
+    "commands": [
+      {
+        "command": "vscode-wezterm.openTerminal",
+        "title": "Open in WezTerm"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "vscode-wezterm.openTerminal",
+        "key": "shift+cmd+c",
+        "mac": "shift+cmd+c"
+      }
+    ],
+    "configuration": {
+      "title": "VSCode WezTerm",
+      "properties": {
+        "vscode-wezterm.weztermPath": {
+          "type": "string",
+          "default": "/Applications/WezTerm.app/Contents/MacOS/wezterm",
+          "description": "Path to WezTerm executable"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^18.x",
+    "@types/vscode": "^1.86.0",
+    "typescript": "^5.2.2"
+  }
+}
